@@ -13,7 +13,7 @@ function activate(context) {
 		return
 	}
 
-	async function findSnippets(requete) {
+	async function findSnippets(requete, selection) {
         //validation for no text being selected
         if (requete.length == 0){
             console.log("Commencez par selectioner un texte avant de lancer la reherche")
@@ -28,14 +28,16 @@ function activate(context) {
             .get(forumURL)
             .end((error, response) => {
                 let data = JSON.parse(response.text);
-                console.log(data)
-                if (data["language"].length == 0) {
-                    vscode.window.showWarningMessage("Le serveur n'a rien retourné !!")
-                }
+                code = data[1]['code']
+				// data = JSON.parse(data)
+                console.log(code)
+                // if (data["language"].length == 0) {
+                //     vscode.window.showWarningMessage("Le serveur n'a rien retourné !!")
+                // }
                 editor.edit(editBuilder => {
                     // const n_data =new Map(Object.entries(JSON.parse(data)))
-					vscode.window.showInformationMessage(data)
-                    // editBuilder.replace(selections, String(n_data));
+					// vscode.window.showInformationMessage(data)
+                    editBuilder.replace(selection, code);
                 });
             })
     }
@@ -45,7 +47,7 @@ function activate(context) {
 		const selection = editor.selection;
 
 		const code_selectionne = document.getText(selection);
-		await findSnippets(code_selectionne);
+		await findSnippets(code_selectionne, selection);
 		vscode.window.showInformationMessage("Recherche fragment ... "+code_selectionne);
 		console.log(code_selectionne)
 	});
